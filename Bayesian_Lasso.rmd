@@ -1,5 +1,5 @@
 ---
-title: "STA365 A5"
+title: "Bayesian Lasso"
 author: "Terence Chan"
 date: "April 7, 2020"
 output: pdf_document
@@ -20,7 +20,7 @@ library(parallel)
 options(mc.cores = parallel::detectCores())
 ```
 
-### Question 1.
+### Part 1.
 
 ```{r}
 n = 100
@@ -57,7 +57,7 @@ X3 = matrix(x3, nrow = n, ncol = p3)
 Y3 = rnorm(mu + X3%*%beta3, sigma^2)
 ```
 
-### Question 2
+### Part 2
 
 ```{stan output.var = "q2"}
  
