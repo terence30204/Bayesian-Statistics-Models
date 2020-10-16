@@ -1,0 +1,117 @@
+---
+title: "STA365 A5"
+author: "Terence Chan"
+date: "April 7, 2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+                      error = FALSE)
+```
+
+```{r}
+library(rstan)
+library(rstanarm)
+
+library(ggplot2)
+library(bayesplot)
+library(parallel)
+options(mc.cores = parallel::detectCores())
+```
+
+### Question 1.
+
+```{r}
+n = 100
+mu = c(rep(0,n))
+sigma = 0.4
+
+p1 = 10
+p2 = 50
+p3 = 100
+
+beta1 = c(1,2,3,rep(0, p1 - 3))
+beta2 = c(1,2,3,rep(0, p2 - 3))
+beta3 = c(1,2,3,rep(0, p3 - 3))
+
+x1 = c()
+for (i in c(rep(1,n))){
+  x1 = append(x1, (c(cos(rnorm(i)), sin(rnorm(i)), tan(rnorm(i)), rnorm(p1-3))))
+}
+X1 = matrix(x1, nrow = n, ncol = p1)
+Y1 = rnorm(mu + X1%*%beta1, sigma^2)
+
+x2 = c()
+for (i in c(rep(1,n))){
+  x2 = append(x2, (c(cos(rnorm(i)), sin(rnorm(i)), tan(rnorm(i)), rnorm(p2-3))))
+}
+X2 = matrix(x2, nrow = n, ncol = p2)
+Y2 = rnorm(mu + X2%*%beta2, sigma^2)
+
+x3 = c()
+for (i in c(rep(1,n))){
+  x3 = append(x3, (c(cos(rnorm(i)), sin(rnorm(i)), tan(rnorm(i)), rnorm(p3-3))))
+}
+X3 = matrix(x3, nrow = n, ncol = p3)
+Y3 = rnorm(mu + X3%*%beta3, sigma^2)
+```
+
+### Question 2
+
+```{stan output.var = "q2"}
+ 
+data {
+  int<lower = 0> n;
+  int<lower = 0> p;
+  matrix[n,p] x;
+  vector[n] y;
+}
+parameters {
+  vector[n] mu;
+  real sigma;
+  vector[p] beta;
+}
+model {
+  y ~ double_exponential(mu + x*beta, sigma);
+  mu ~ normal(0,2);
+  beta ~ normal(0,2);
+  sigma ~ normal(0,2);
+}
+```
+
+```{r}
+data1 = list(n=n, p=p1, x=X1, y=Y1)
+fit1 = sampling(q2, data = data1)
+plot(fit1)
+```
+
+```{r}
+data2 = list(n=n, p=p2, x=X2, y=Y2)
+fit2 = sampling(q2, data = data2)
+plot(fit2)
+```
+
+```{r}
+data3 = list(n=n, p=p3, x=X3, y=Y3)
+fit3 = sampling(q2, data = data3)
+plot(fit3)
+```
+
+The data shows that an increase in the shrinkage parameters leads to a decrease in the variability and increase in the accuracy of the data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
